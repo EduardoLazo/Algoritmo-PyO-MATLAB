@@ -1,0 +1,43 @@
+function D = MPPT(VPV,IPV)
+
+Dmax=0.95;
+Dmin=0.01;
+deltaD=0.0001;
+
+persistent Vant Pant Dant;
+
+if isempty(Vant)
+    Vant=0;
+    Pant=0;
+    Dant=0.4;
+end
+
+P = VPV * IPV;
+dV = VPV - Vant;
+dP= P - Pant;
+
+if (dP ~= 0)
+    if dP > 0
+        if dV > 0
+            D = Dant - deltaD;
+        else
+            D = Dant + deltaD;
+        end
+    else
+        if dV > 0
+            D = Dant + deltaD;
+        else
+            D = Dant - deltaD; 
+        end
+    end
+else 
+    D = Dant;
+end
+
+if D >= Dmax || D <= Dmin
+    D = Dant;
+end
+
+Dant=D;
+Vant=VPV;
+Pant=P;
